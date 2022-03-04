@@ -34,3 +34,4 @@ It's assumed you have a Sporran wallet installed with Credentials available.
 - [ ] move the setup flow to CLI
 - [ ] CLI feature to create a test user with Credential on Peregrin
 - [ ] refactor / organize / comment code
+- [ ] add recipe to CLI
