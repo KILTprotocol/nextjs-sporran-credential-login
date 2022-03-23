@@ -18,7 +18,7 @@ async function validateSession(req, res) {
   if (!session) return die(res, 500, 'invalid session');
 
   // load the encryption key
-  const encryptionKey = await Did.DefaultResolver.resolveKey(encryptionKeyId);
+  const encryptionKey = await Did.DidResolver.resolveKey(encryptionKeyId);
   if (!encryptionKey) return die(res, 500, `failed resolving ${encryptionKeyId}`);
 
   // decrypt the message

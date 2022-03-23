@@ -82,19 +82,23 @@ async function getRequest(req, res) {
   const content = { cTypes, challenge };
   const type = MessageBodyType.REQUEST_CREDENTIAL;
   const didUri = process.env.VERIFIER_DID_URI;
-  const keyId = encryptionKeyId.replace(/#.*$/, '');
-  const message = new Message({ content, type }, didUri, keyId);
+  const keyDid = encryptionKeyId.replace(/#.*$/, '');
+  const message = new Message({ content, type }, didUri, keyDid);
   if (!message) return die(res, 500, 'failed to construct message');
 
   // load the encryption keys
-  const receiverKey = await Did.DefaultResolver.resolveKey(encryptionKeyId);
-  if (!receiverKey) return die(res, 500, `failed to resolve receiver key ${encryptionKeyId}`);
+  // const receiverKey = await Did.DidResolver.resolveKey(encryptionKeyId);
+  // if (!receiverKey) return die(res, 500, `failed to resolve receiver key ${encryptionKeyId}`);
   
-  const dappEncryptionKey = await Did.DefaultResolver.resolveKey(encryptionKey.id);
-  if (!dappEncryptionKey) return die(res, 500, `failed to resolve receiver key ${encryptionKey.id}`);
+  // const dappEncryptionKey = await Did.DidResolver.resolveKey(encryptionKey.id);
+  // if (!dappEncryptionKey) return die(res, 500, `failed to resolve receiver key ${encryptionKey.id}`);
 
+  const { identifier } = Did.DidUtils.parseDidUri(didUri);
+  const fullDid = await Did.FullDidDetails.fromChainInfo(identifier);
+  console.log(fullDid)
+  
   // encrypt the message
-  const output = await message.encrypt(dappEncryptionKey, receiverKey, encryptionKeystore);
+  const output = await message.encrypt(encryptionKey.id, fullDid, encryptionKeystore, encryptionKeyId);
   if (!output) return die(res, 500, `failed to encrypt message`);
 
   res.status(200).send(output);

@@ -35,7 +35,7 @@ export const decryptChallenge = async (encryptedChallenge, encryptionKey, nonce)
   // decrypt the challenge
   const data = Utils.Crypto.coToUInt8(encryptedChallenge);
   const nonced = Utils.Crypto.coToUInt8(nonce);
-  const peerPublicKey = Utils.Crypto.coToUInt8(encryptionKey.publicKeyHex);
+  const peerPublicKey = encryptionKey.publicKey;
   const decrypted = naclOpen(data, nonced, peerPublicKey, keyAgreement.secretKey);
 
   // compare hex strings, fail if mismatch
