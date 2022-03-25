@@ -1,4 +1,4 @@
-import { protectRoute } from "../../utils/auth"
+import { protectRoute } from "../../utilities/auth"
 
 export default function handler(req, res) {
   protectRoute(req, res)

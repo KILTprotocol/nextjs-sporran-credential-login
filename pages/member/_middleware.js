@@ -1,4 +1,4 @@
-import { getCookieData } from "../../utils/auth"
+import { getCookieData } from "../../utilities/auth"
 import { NextResponse } from 'next/server'
 
 export function middleware(req) {

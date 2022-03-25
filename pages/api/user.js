@@ -1,4 +1,4 @@
-import { clearCookie, setCookie, createJWT, getCookieData } from '../../utils/auth';
+import { clearCookie, setCookie, createJWT, getCookieData } from '../../utilities/auth';
 
 export default function handler(req, res) {
   // load and parse the cookie

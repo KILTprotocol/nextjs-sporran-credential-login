@@ -1,15 +1,12 @@
-import { Did, init } from "@kiltprotocol/sdk-js";
-import { cryptoWaitReady, randomAsHex } from "@polkadot/util-crypto"
-import { storage, decryptChallenge, methodNotFound, die } from "../../utils/verifier";
-import encryptionKey from '../../utils/encryptionKey.json';
+import { randomAsHex } from "@polkadot/util-crypto"
+import storage from "../../utilities/storage";
+import { decryptChallenge, methodNotFound, die, getFullDid } from "../../utilities/verifier";
+import { getEncryptionKey } from "../../utilities/helpers";
 
 /** validateSession
  * checks that an established session is valid
  */
 async function validateSession(req, res) {
-  await cryptoWaitReady();
-  await init({ address: process.env.WSS_ADDRESS });
-
   // the payload from client
   const { encryptionKeyId, encryptedChallenge, nonce, sessionId } = JSON.parse(req.body);
 
@@ -18,7 +15,7 @@ async function validateSession(req, res) {
   if (!session) return die(res, 500, 'invalid session');
 
   // load the encryption key
-  const encryptionKey = await Did.DidResolver.resolveKey(encryptionKeyId);
+  const encryptionKey = await getEncryptionKey(encryptionKeyId)
   if (!encryptionKey) return die(res, 500, `failed resolving ${encryptionKeyId}`);
 
   // decrypt the message
@@ -42,11 +39,14 @@ async function validateSession(req, res) {
  */
 async function returnSessionValues(req, res) {
   // create session data
+  const fullDid = await getFullDid()
+  const dAppEncryptionKeyId = fullDid.assembleKeyId(fullDid.encryptionKey.id);
+
   const session = {
     sessionId: randomAsHex(),
     challenge: randomAsHex(),
     dappName: process.env.DAPP_NAME,
-    dAppEncryptionKeyId: encryptionKey.id,
+    dAppEncryptionKeyId,
   };
 
   // store it in session
