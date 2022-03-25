@@ -1,6 +1,9 @@
 module.exports = {
   reactStrictMode: true,
-  output: { publicPath: '/' },
+  webpack: (config) => {
+    config.output = { publicPath: '/' }
+    return config
+  },
   async redirects() {
     return [
       {
