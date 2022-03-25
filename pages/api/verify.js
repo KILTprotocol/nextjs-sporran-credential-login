@@ -1,8 +1,8 @@
 import { Utils, Message, MessageBodyType, Credential } from '@kiltprotocol/sdk-js';
 import storage from '../../utilities/storage';
-import { exit, methodNotFound, cTypes } from '../../utilities/helpers'
+import { exit, methodNotFound } from '../../utilities/helpers'
 import { encryptionKeystore, getFullDid } from "../../utilities/verifier";
-import { clearCookie, createJWT, setCookie } from '../../utilities/auth';
+import { cTypes, clearCookie, createJWT, setCookie } from '../../utilities/auth';
 
 /** verifyRequest
  * verifies credential presentation, returns 200

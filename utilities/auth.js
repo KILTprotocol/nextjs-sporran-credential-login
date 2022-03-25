@@ -5,6 +5,11 @@ import { init, disconnect, Did, KeyRelationship } from '@kiltprotocol/sdk-js';
 import { cryptoWaitReady, randomAsHex, signatureVerify } from '@polkadot/util-crypto';
 import ms from 'ms'
 
+export const cTypes = [
+  { name: 'SocialKYC Twitter', cTypeHash: '0x47d04c42bdf7fdd3fc5a194bcaa367b2f4766a6b16ae3df628927656d818f420' },
+  { name: 'SocialKYC Email', cTypeHash: '0x3291bb126e33b4862d421bfaa1d2f272e6cdfc4f96658988fbcffea8914bd9ac' },
+]
+
 export function protectRoute(req, res) {
   return new Promise((resolve, reject) => {
     // format the token for the parser
