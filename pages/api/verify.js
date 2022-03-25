@@ -1,5 +1,5 @@
 import { Utils, Message, MessageBodyType, Credential } from '@kiltprotocol/sdk-js';
-import storage from '../../utilities/storage';
+import getStorage from '../../utilities/storage';
 import { exit, methodNotFound } from '../../utilities/helpers'
 import { encryptionKeystore, getFullDid } from "../../utilities/verifier";
 import { cTypes, clearCookie, createJWT, setCookie } from '../../utilities/auth';
@@ -13,6 +13,7 @@ async function verifyRequest(req, res) {
   const { sessionId, message: rawMessage } = JSON.parse(req.body);
 
   // load the session, fail if null or missing challenge request
+  const storage = getStorage()
   const session = storage.get(sessionId);
   if (!session) return exit(res, 500, 'invalid session');
 
@@ -68,6 +69,7 @@ async function getRequest(req, res) {
   const { sessionId } = req.query;
 
   // load the session
+  const storage = getStorage();
   const session = storage.get(sessionId);
   if (!session) return exit(res, 500, 'invalid session');
 

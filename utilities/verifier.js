@@ -34,11 +34,13 @@ export const relationships = {
   [KeyRelationship.keyAgreement]: keypairs.keyAgreement,
 }
 
+let fullDid
 export async function getFullDid() {
+  if (fullDid) return fullDid
   await cryptoWaitReady()
   await init({ address: process.env.WSS_ADDRESS })
   const { identifier } = Did.DidUtils.parseDidUri(process.env.VERIFIER_DID_URI)
-  const fullDid = await Did.FullDidDetails.fromChainInfo(identifier)
+  fullDid = await Did.FullDidDetails.fromChainInfo(identifier)
   return fullDid
 }
 

@@ -1,6 +1,12 @@
 import NodeCache from "node-cache";
 
-export default new NodeCache({ 
-  stdTTL: 60 * 60, 
-  useClones: false 
-})
+let storage
+export default function () {
+  if (!storage) {
+    storage = new NodeCache({ 
+      stdTTL: 60 * 60, 
+      useClones: false 
+    })
+  }
+  return storage
+} 

@@ -1,7 +1,7 @@
 import { randomAsHex } from "@polkadot/util-crypto"
-import storage from "../../utilities/storage";
-import { decryptChallenge, methodNotFound, die, getFullDid } from "../../utilities/verifier";
-import { getEncryptionKey } from "../../utilities/helpers";
+import getStorage from "../../utilities/storage";
+import { decryptChallenge, getFullDid } from "../../utilities/verifier";
+import { exit, getEncryptionKey, methodNotFound } from "../../utilities/helpers";
 
 /** validateSession
  * checks that an established session is valid
@@ -11,16 +11,17 @@ async function validateSession(req, res) {
   const { encryptionKeyId, encryptedChallenge, nonce, sessionId } = JSON.parse(req.body);
 
   // load the session, fail if null
+  const storage = getStorage()
   const session = storage.get(sessionId)
-  if (!session) return die(res, 500, 'invalid session');
+  if (!session) return exit(res, 500, 'invalid session');
 
   // load the encryption key
   const encryptionKey = await getEncryptionKey(encryptionKeyId)
-  if (!encryptionKey) return die(res, 500, `failed resolving ${encryptionKeyId}`);
+  if (!encryptionKey) return exit(res, 500, `failed resolving ${encryptionKeyId}`);
 
   // decrypt the message
   const decrypted = await decryptChallenge(encryptedChallenge, encryptionKey, nonce);
-  if (decrypted !== session.challenge) return die(res, 500, 'challenge mismatch');
+  if (decrypted !== session.challenge) return exit(res, 500, 'challenge mismatch');
 
   // update the session
   storage.set(sessionId, {
@@ -50,6 +51,7 @@ async function returnSessionValues(req, res) {
   };
 
   // store it in session
+  const storage = getStorage()
   storage.set(session.sessionId, session);
 
   // return session data
