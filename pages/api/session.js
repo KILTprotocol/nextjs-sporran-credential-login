@@ -1,5 +1,5 @@
 import { randomAsHex, cryptoWaitReady } from "@polkadot/util-crypto"
-import getStorage from "../../utilities/storage";
+import storage from 'memory-cache';
 import { decryptChallenge, getFullDid } from "../../utilities/verifier";
 import { exit, getEncryptionKey, methodNotFound } from "../../utilities/helpers";
 import { init } from '@kiltprotocol/sdk-js'
@@ -11,7 +11,6 @@ async function validateSession(req, res) {
   const { encryptionKeyId, encryptedChallenge, nonce, sessionId } = JSON.parse(req.body);
 
   // load the session, fail if null
-  const storage = getStorage()
   const session = storage.get(sessionId)
   if (!session) return exit(res, 500, 'invalid session');
 
@@ -24,7 +23,7 @@ async function validateSession(req, res) {
   if (decrypted !== session.challenge) return exit(res, 500, 'challenge mismatch');
 
   // update the session
-  storage.set(sessionId, {
+  storage.put(sessionId, {
     ...session,
     did: encryptionKey.controller,
     encryptionKeyId,
@@ -53,8 +52,7 @@ async function returnSessionValues(req, res) {
   };
 
   // store it in session
-  const storage = getStorage()
-  storage.set(session.sessionId, session);
+  storage.put(session.sessionId, session);
 
   // return session data
   res.status(200).json(session);

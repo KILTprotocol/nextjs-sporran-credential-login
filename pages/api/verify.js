@@ -1,5 +1,5 @@
 import { Utils, Message, MessageBodyType, Credential } from '@kiltprotocol/sdk-js';
-import getStorage from '../../utilities/storage';
+import storage from 'memory-cache';
 import { exit, methodNotFound } from '../../utilities/helpers'
 import { encryptionKeystore, getFullDid } from "../../utilities/verifier";
 import { cTypes, clearCookie, createJWT, setCookie } from '../../utilities/auth';
@@ -13,7 +13,6 @@ async function verifyRequest(req, res) {
   const { sessionId, message: rawMessage } = JSON.parse(req.body);
 
   // load the session, fail if null or missing challenge request
-  const storage = getStorage()
   const session = storage.get(sessionId);
   if (!session) return exit(res, 500, 'invalid session');
 
@@ -44,7 +43,7 @@ async function verifyRequest(req, res) {
   // credential valid, business logic here...
   // set JWT session token, issue privelaged response etc..
   // here we just set verified to true for other hypothetical calls
-  storage.set(sessionId, { ...session, verified: true });
+  storage.put(sessionId, { ...session, verified: true });
 
   if (!did) {
     // if invalid clear httpOnly cookie & send 401
@@ -69,7 +68,6 @@ async function getRequest(req, res) {
   const { sessionId } = req.query;
 
   // load the session
-  const storage = getStorage();
   const session = storage.get(sessionId);
   if (!session) return exit(res, 500, 'invalid session');
 
@@ -80,7 +78,7 @@ async function getRequest(req, res) {
 
   // set the challenge
   const challenge = Utils.UUID.generate();
-  storage.set(sessionId, { ...session, challenge });
+  storage.put(sessionId, { ...session, challenge });
 
   // construct the message
   const content = { cTypes, challenge };
