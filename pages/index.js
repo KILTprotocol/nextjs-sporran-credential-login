@@ -7,7 +7,7 @@ import User from "../components/User"
 import useUser from "../hooks/user"
 
 export default function Home() {
-  const { user, login, logout } = useUser()
+  const { user, connected, login, logout } = useUser()
   const router = useRouter() 
 
   async function testSecretApi() {
@@ -24,7 +24,7 @@ export default function Home() {
     <Page>
       <Page.Header>
         <Logo />
-        <User user={user} onClick={user ? logout : login} />
+        <User user={user} connected={connected} onClick={user ? logout : login} />
       </Page.Header>
       <Page.Content>
         <Card>

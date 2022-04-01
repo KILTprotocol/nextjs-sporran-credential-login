@@ -1,6 +1,6 @@
 import styles from './User.module.css'
 
-export default function User({ user, onClick }) {
+export default function User({ user, connected, onClick }) {
   return (
     <div>
       <div className={styles.account} >
@@ -12,7 +12,7 @@ export default function User({ user, onClick }) {
         <span className={styles.text}>{user || 'guest'}</span>
       </div>
       <a className={styles.action} onClick={onClick}>
-        {user === undefined ? '...loading' : user ? 'logout' : 'login'}
+        {!connected ? 'connect' : user ? 'logout' : 'login'}
       </a>
     </div>
   )
