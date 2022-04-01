@@ -1,8 +1,8 @@
-import { randomAsHex } from "@polkadot/util-crypto"
+import { randomAsHex, cryptoWaitReady } from "@polkadot/util-crypto"
 import getStorage from "../../utilities/storage";
 import { decryptChallenge, getFullDid } from "../../utilities/verifier";
 import { exit, getEncryptionKey, methodNotFound } from "../../utilities/helpers";
-
+import { init } from '@kiltprotocol/sdk-js'
 /** validateSession
  * checks that an established session is valid
  */
@@ -39,6 +39,8 @@ async function validateSession(req, res) {
  * provides client with data needed to start session
  */
 async function returnSessionValues(req, res) {
+  await cryptoWaitReady()
+  await init({ address: process.env.WSS_ADDRESS })
   // create session data
   const fullDid = await getFullDid()
   const dAppEncryptionKeyId = fullDid.assembleKeyId(fullDid.encryptionKey.id);
