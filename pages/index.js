@@ -1,36 +1,38 @@
 import { useRouter } from "next/router"
-import { useEffect } from "react"
+import Button from "../components/Button"
+import Logo from "../components/Logo"
 import Page from "../components/Page"
-import useUser from '../hooks/user'
+import Card from "../components/Card"
+import User from "../components/User"
+import useUser from "../hooks/user"
 
 export default function Home() {
-  const { user, connected, login, logout } = useUser()
+  const { user, login, logout } = useUser()
   const router = useRouter() 
 
-  useEffect(() => {
-    fetch('/api/secret', { credentials: 'include' })
-    .then(console.log)
-    .catch(console.log)
-  }, [ user ])
+  async function testSecretApi() {
+    const result = await fetch('/api/secret', { credentials: 'include' })
+    const message = await result.text()
+    alert(message)
+  }
+
+  async function testSecretPage() {
+    router.push('/member/secret')
+  }
 
   return (
     <Page>
-      <h1>Home</h1>
-      {user === undefined ? (
-        <h3>...loading</h3>
-      ) : (
-        <>  
-          <h3>Hi {user || 'guest'}</h3>
-          <button onClick={() => router.push('/member/secret')}>Secret Page</button>
-          <button onClick={() => router.push('/api/secret')}>Secret API</button>
-          <button onClick={user ? logout : login}>{ user ? 'Logout' : connected ? 'Login' : 'Connect'}</button>
-        </>
-      )}
+      <Page.Header>
+        <Logo />
+        <User user={user} onClick={user ? logout : login} />
+      </Page.Header>
+      <Page.Content>
+        <Card>
+          <h1>Home Page</h1>
+          <Button onClick={testSecretPage}>GO TO SECRET PAGE</Button>
+          <Button onClick={testSecretApi}>GET SECRET MESSAGE</Button>
+        </Card>
+      </Page.Content>
     </Page>
   )
 }
-
-export const getServerSideProps = (ctx) => {
-  return { props: {} }
-}
-

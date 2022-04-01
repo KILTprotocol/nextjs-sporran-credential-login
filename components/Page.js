@@ -1,12 +1,27 @@
 import styles from './Page.module.css'
 
-export default function Page({ children }) {
-
+function Page({ children }) {
   return (
     <div className={styles.page}>
-      <div className={styles.container}>
-        {children}
-      </div>
+      {children}
     </div>
   )
 }
+
+Page.Header = function({ children }) {
+  return (
+    <header className={styles.header}>
+      {children}
+    </header>
+  )
+}
+
+Page.Content = function({ children }) {
+  return (
+    <section className={styles.content}>
+      {children}
+    </section>
+  )
+}
+
+export default Page

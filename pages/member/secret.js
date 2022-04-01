@@ -1,27 +1,27 @@
 import { useRouter } from "next/router"
-import { useEffect } from "react"
+import Button from "../../components/Button"
+import Logo from "../../components/Logo"
 import Page from "../../components/Page"
-import useUser from '../../hooks/user'
+import Card from "../../components/Card"
+import User from "../../components/User"
+import useUser from "../../hooks/user"
 
 export default function Secret() {
-  const { user, logout } = useUser()
-  const router = useRouter()
-
-  useEffect(() => {
-    // you can also redirect here
-    if (user === null) router.push('/')
-  }, [ user ])
+  const { user, login, logout } = useUser()
+  const router = useRouter() 
 
   return (
     <Page>
-      {user ? (
-        <>
-          <h1>Top Secret</h1>
-          <h3>Hi: {user}</h3>
-          <button onClick={() => router.push('/')}>Home</button>
-          <button onClick={logout}>Logout</button>
-        </>
-      ) : null }
+      <Page.Header>
+        <Logo />
+        <User user={user} onClick={user ? logout : login} />
+      </Page.Header>
+      <Page.Content>
+        <Card>
+          <h1>Top Secret Page</h1>
+          <Button onClick={() => router.push('/')}>BACK HOME</Button>
+        </Card>
+      </Page.Content>
     </Page>
   )
 }

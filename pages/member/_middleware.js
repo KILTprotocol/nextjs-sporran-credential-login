@@ -9,10 +9,10 @@ export function middleware(req) {
   const user = getCookieData({ name: 'token', cookie })
 
   if (!user) {
-    // if user isn't logged in redirect 
+    // you can throw unauthorized
+    return new NextResponse('unauthorized')
+    
+    // or you can redirect gracefully
     return NextResponse.redirect('/')
-
-    // or you can throw 
-    //return new NextResponse('unauthorized')
   }
 }
