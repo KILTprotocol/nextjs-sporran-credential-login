@@ -7,14 +7,14 @@ import User from "../../components/User"
 import useUser from "../../hooks/user"
 
 export default function Secret() {
-  const { user, login, logout } = useUser()
+  const { user, connected, login, logout } = useUser()
   const router = useRouter() 
 
   return (
     <Page>
       <Page.Header>
         <Logo />
-        <User user={user} onClick={user ? logout : login} />
+        <User user={user} connected={connected} onClick={user ? logout : login} />
       </Page.Header>
       <Page.Content>
         <Card>
