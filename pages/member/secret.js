@@ -5,10 +5,15 @@ import Page from "../../components/Page"
 import Card from "../../components/Card"
 import User from "../../components/User"
 import useUser from "../../hooks/user"
+import { useEffect } from "react"
 
 export default function Secret() {
   const { user, connected, login, logout } = useUser()
   const router = useRouter() 
+
+  useEffect(() => {
+    if (!user) router.push('/')
+  }, [ user ])
 
   return (
     <Page>
