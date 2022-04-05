@@ -15,6 +15,7 @@ Page.Header = function({ children }) {
     </header>
   )
 }
+Page.Header.displayName = 'Page.Header'
 
 Page.Content = function({ children }) {
   return (
@@ -23,5 +24,6 @@ Page.Content = function({ children }) {
     </section>
   )
 }
+Page.Content.displayName = 'Page.Content'
 
 export default Page
