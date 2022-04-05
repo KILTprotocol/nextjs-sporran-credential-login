@@ -13,7 +13,7 @@ export default function Secret() {
 
   useEffect(() => {
     if (!user) router.push('/')
-  }, [ user ])
+  }, [ user, router ])
 
   return (
     <Page>
