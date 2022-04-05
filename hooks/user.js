@@ -5,7 +5,6 @@ let _user
 export default function useUser() {
   const [ user, setUser ] = useState(_user);
   const { sporran, session, startSession, presentCredential } = useSporran();
-  const [ connected, setConnected ] = useState(!!user || !!session);
   
   useEffect(() => {
     (async () => {
@@ -13,16 +12,14 @@ export default function useUser() {
       const result = await (await fetch('/api/user')).text()
       _user = !!result ? result : null
       setUser(_user)
-      setConnected(!!_user || !!session)
     })()
-  }, []);
+  }, [ session ]);
 
   async function logout() {
     const loggedOut = (await fetch('/api/logout')).ok
     if (!loggedOut) return
     _user = null
      setUser(null)
-     setConnected(!!_user || !!session)
   }
 
   async function login() {
@@ -32,12 +29,11 @@ export default function useUser() {
     const result = await (await fetch('/api/user')).text()
     _user = !!result ? result : null
     setUser(_user)
-    setConnected(!!_user || !!session)
   }
 
   return {
-    user, 
-    connected,
+    user,
+    connected: !!user || !!session,
     login, 
     logout,
   }
