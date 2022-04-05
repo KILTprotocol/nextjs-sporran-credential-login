@@ -59,7 +59,7 @@ async function returnSessionValues(req, res) {
 }
 
 // expose GET and POST routes
-export default async function(req, res) {
+export default async function handler(req, res) {
   const { method = '404' } = req;
   const actions = {
     GET: returnSessionValues,
