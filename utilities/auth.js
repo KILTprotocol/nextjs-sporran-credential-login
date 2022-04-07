@@ -3,7 +3,6 @@ import jwt from 'jsonwebtoken';
 import { serialize, parse } from 'cookie';
 import { init, disconnect, Did, KeyRelationship } from '@kiltprotocol/sdk-js';
 import { cryptoWaitReady, randomAsHex, signatureVerify } from '@polkadot/util-crypto';
-import ms from 'ms'
 
 export const cTypes = [
   {
@@ -51,14 +50,14 @@ export function setCookie(res, { name, data }) {
     path: '/',
     secure: true,
     domain: 'localhost',
-    expires: new Date((new Date().getTime() + ms(process.env.JWT_EXPIRY * 1000))) 
+    expires: new Date((new Date().getTime() + process.env.JWT_EXPIRY )) 
   }));
 }
 
 export function createJWT(subject) {
   // generate JWT auth token
   const secret = process.env.JWT_SECRET
-  const expiresIn = ms(process.env.JWT_EXPIRY * 1000)
+  const expiresIn = process.env.JWT_EXPIRY
   const token = jwt.sign({ sub: subject }, secret, { expiresIn })
   return token
 }
