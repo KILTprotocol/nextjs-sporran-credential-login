@@ -87,19 +87,8 @@ npm run dev
 
 ## What can you do with the credentials?
 
-You can make applications require credentials to access to parts of the services. For example,  having a credential for the users shipping information, the database links the users DID to specific hashes of stored credential. When someone wants to make a purchase they are able to provide the data to the site.
+You can make applications that require credentials to access parts of the services. For example,  having a credential for the user's shipping information, the database links the user DID to specific hashes of stored credentials. When someone wants to make a purchase, they can provide the data to the site and not rely on a centralised service.
 
-Consider a user comes to the website, they have a credential with their email address that user provides the website access to the credential to verify the information. Once verified it can delete the personal information and store the credential hash to the users DID and login unique ID for the sight. The user buys an item from your store, or uses a service that requires information about shipping. The Credential hash can be stored once again to associated place in the database, and requested during the short process and removed after the shipment has been processed. The user can rely on the website forgetting the information and feel comfortable with the process of trust.
+Consider a user comes to the website, they have a credential with their email address that user provides the website access to the credential to verify the information. Once confirmed, the application can delete the personal information and store the credential hash to the user DID and unique login ID for the site. The user buys an item from your store or uses a service that requires information about shipping. The credential hash can be stored once again in the associated place in the database and requested during the short process, and removed after processing the shipment. The user can rely on the website for getting the information and feel comfortable with the process of trust.
 
-The utility can be expanded further. Lets look at the credential login process now and go over what each step is doing and where you can take the code and add it to your existing project or start from scratch from this point.
-
-## Breakdown
-
-What are the topic here I want to discuss inside the recipe page
-
-- Add verification asset
-    - Verification mnemonic
-    - Verification DID
-- Domain linkage credential
-- Connection to blockchain
-- Using the sporran wallet
+The utility can be expanded further. Let's look at the credential login process now and go over what each step is doing and where you can take the code and add it to your existing project or start from scratch from this point.
