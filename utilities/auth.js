@@ -51,14 +51,14 @@ export function setCookie(res, { name, data }) {
     path: '/',
     secure: true,
     domain: 'localhost',
-    expires: new Date((new Date().getTime() + ms(process.env.JWT_EXPIRY))) 
+    expires: new Date((new Date().getTime() + ms(process.env.JWT_EXPIRY * 1000))) 
   }));
 }
 
 export function createJWT(subject) {
   // generate JWT auth token
   const secret = process.env.JWT_SECRET
-  const expiresIn = ms(process.env.JWT_EXPIRY)
+  const expiresIn = ms(process.env.JWT_EXPIRY * 1000)
   const token = jwt.sign({ sub: subject }, secret, { expiresIn })
   return token
 }
