@@ -25,7 +25,7 @@ npm run dev
 
 API endpoints require the user to be logged in. You can ensure this by checking the http-only cookie. See `/pages/api/secret.js` as an example. 
 
-```
+``` javascript
 export default function handler(req, res) {
   // get the user from http-only cookie
   const cookie = `token=${req.cookies.token}`
@@ -44,7 +44,7 @@ export default function handler(req, res) {
 
 Pages leverage NextJS middleware to protect against unauthorized access. See `/pages/member/_middleware.js` as an example.
 
-```
+``` javascript
 export function middleware(req) {
   // get the user from http-only cookie
   const cookie = `token=${req.cookies.token}`
