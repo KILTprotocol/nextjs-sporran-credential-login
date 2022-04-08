@@ -4,7 +4,9 @@ The following code is example code and requires the user to add business logic a
 
 The Web3 DID login with credential verification gives a new flow for authentication by giving the control of the users data back into their hands, whilst providing utility into the builders of the application and unloading the burden of users personal data.
 
-The flow from the application: ​​User -> website -> logins in with DID -> Website requests credential -> User gives premisssion access a credential -> Creates Access token -> Website saves credential hash connected to the did in backend excluding personal info
+The flow from the application
+
+![](./public/web3LoginFlow.png)
 
 ## Getting Started
 
