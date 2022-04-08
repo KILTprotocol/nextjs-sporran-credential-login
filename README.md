@@ -1,8 +1,8 @@
 # Web3 Verification Credential Login
 
-The following code is example code and requires the user to add business logic and security to the application. 
+The following code is example code and requires the user to add business logic and security to the application.
 
-The Web3 DID login with credential verification gives a new flow for authentication by giving the control of the users data back into their hands, whilst providing utility into the builders of the application and unloading the burden of users personal data. 
+The Web3 DID login with credential verification gives a new flow for authentication by giving the control of the users data back into their hands, whilst providing utility into the builders of the application and unloading the burden of users personal data.
 
 The flow from the application: ​​User -> website -> logins in with DID -> Website requests credential -> User gives premisssion access a credential -> Creates Access token -> Website saves credential hash connected to the did in backend excluding personal info
 
@@ -16,7 +16,7 @@ Lets get going! Lets see how you can start a web3 DID login with credentials ver
 
 ### Verifier Setup
 
-You will need a DID and verification of the domain for so the users, can see the entity (website) are the same entity that controls an Internet domain, this is called the [well known domain linkage credential](https://identity.foundation/specs/did-configuration/).
+In order to use the web3 login, the service needs its own DID and provide a [well known domain linkage credential](https://identity.foundation/specs/did-configuration/). A well known domain linkage credential provides a credential for users to verify the domain belongs to the given service. Creating a way to share public keys with the application and user.
 
 You can create and attest your well known domain linkage credential or you can use the verification setup tool in the [KILT Distillery CLI](https://github.com/KILTprotocol/kilt-distillery-cli/tree/main/recipes)
 
@@ -89,6 +89,10 @@ npm run dev
 
 You can make applications that require credentials to access parts of the services. For example,  having a credential for the user's shipping information, the database links the user DID to specific hashes of stored credentials. When someone wants to make a purchase, they can provide the data to the site and not rely on a centralised service.
 
-Consider a user comes to the website, they have a credential with their email address that user provides the website access to the credential to verify the information. Once confirmed, the application can delete the personal information and store the credential hash to the user DID and unique login ID for the site. The user buys an item from your store or uses a service that requires information about shipping. The credential hash can be stored once again in the associated place in the database and requested during the short process, and removed after processing the shipment. The user can rely on the website for getting the information and feel comfortable with the process of trust.
+Consider a user, they comes to the website and want to use a service needing shipping information and a way to contact the user. The website accepts credentials issued by socialKYC as they trust the service. This user can provide the website with the credentials to verify the given information, and the application can validate the credentials by querying the KILT chain.
 
-The utility can be expanded further. Let's look at the credential login process now and go over what each step is doing and where you can take the code and add it to your existing project or start from scratch from this point.
+Once confirmed, the application can create a unique login with the DID plus other information, such as a password. After creating the login, the application can delete all personal information and store any credential hashes for later uses.
+
+Now, the user wants to buy an item from your store or uses a service that requires information about shipping. Instead of the user entering or the application knowing the personal information, the website can request a new or existing credential the user owns, assoicated to a given CType. The website validates the information, creates the order, issues an invoice and deletes all personal information afterwards. The user can rely on the website for getting the information and feel comfortable with the process of trust.
+
+The utilities can be expanded further. Let's look at the credential login process now and go over what each step is doing and where you can take the code and add it to your existing project or start from scratch from this point.
