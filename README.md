@@ -1,8 +1,6 @@
 ## Verifier Setup
-Use the KILT Distillery CLI to setup: 
-- .env
-- didConfiguration.json
-- test Peregrine credentials
+
+You can use the KILT Distillery CLI to quickly setup this project or generate the assets needed.
 
 ## Disclaimer
 This code is not for production use. It serves as an example workflow for accepting Credentials. 
