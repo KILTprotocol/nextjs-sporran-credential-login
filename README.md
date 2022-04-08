@@ -1,6 +1,6 @@
 ## Verifier Setup
 
-You can use the KILT Distillery CLI to quickly setup this project or generate the assets needed.
+In order to run this recipe you need an on-chain DID, domain linkage credential and test Claimer credentials. Please use the KILT Distillery CLI to quickly setup this project or generate the assets needed. 
 
 ## Disclaimer
 This code is not for production use. It serves as an example workflow for accepting Credentials. 
