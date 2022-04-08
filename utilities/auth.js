@@ -33,17 +33,6 @@ export const cTypes = [
   },
 ]
 
-export function protectRoute(req, res) {
-  return new Promise((resolve, reject) => {
-    // format the token for the parser
-    const cookie = `token=${req.cookies.token}`
-    // get user and throw if doesn't exist
-    const user = getCookieData({ name: 'token', cookie })
-    if (!!user) return resolve()
-    else return reject()
-  })
-}
-
 export function setCookie(res, { name, data }) {
   // set httpOnly token cookie for future auth
   res.setHeader('Set-Cookie', serialize(name, data, { 

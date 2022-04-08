@@ -48,13 +48,13 @@ async function verifyRequest(req, res) {
   if (!did) {
     // if invalid clear httpOnly cookie & send 401
     clearCookie(res, { name: 'token'})
-    res.status(401).send('')
-  } else {
-    // if valid create JWT from DID, set httpOnly cookie, return 200 with DID
-    const token = createJWT(did)
-    setCookie(res, { name: 'token', data: token })
-    res.status(200).send(did)
+    return res.status(401).send('')
   }
+   
+  // if valid create JWT from DID, set httpOnly cookie, return 200 with DID
+  const token = createJWT(did)
+  setCookie(res, { name: 'token', data: token })
+  res.status(200).send(did)
 
   // return success
   return res.status(200).end();
