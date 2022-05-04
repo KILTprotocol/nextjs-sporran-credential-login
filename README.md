@@ -14,7 +14,7 @@ Lets get going! Lets see how you can start a web3 DID login with credentials ver
 
 ### Requirements
 
-`Node` installed and [sporran wallet](https://github.com/BTE-Trusted-Entity/sporran-extension/tree/main) for testing use the test sporran walleter. For installation follow the steps in the sporran wallet repository.
+`Node` installed and [sporran wallet](https://github.com/BTE-Trusted-Entity/sporran-extension/tree/main) for testing use the test sporran wallet. For installation follow the steps in the sporran wallet repository.
 
 ### Verifier Setup
 
@@ -89,7 +89,7 @@ npm run dev
 
 ## What can you do with the credentials?
 
-You can make applications that require credentials to access parts of the services. For example,  having a credential for the user's shipping information, the database links the user DID to specific hashes of stored credentials. When someone wants to make a purchase, they can provide the data to the site and not rely on a centralised service.
+You can make applications that require credentials to access parts of the services. For example, having a credential for the user's shipping information, the database links the user DID to specific hashes of stored credentials. When someone wants to make a purchase, they can provide the data to the site and not rely on a centralised service.
 
 Consider a user, they comes to the website and want to use a service needing shipping information and a way to contact the user. The website accepts credentials issued by socialKYC as they trust the service. This user can provide the website with the credentials to verify the given information, and the application can validate the credentials by querying the KILT chain.
 
