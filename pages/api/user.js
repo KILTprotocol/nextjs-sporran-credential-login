@@ -1,6 +1,6 @@
 import { clearCookie, setCookie, createJWT, getCookieData } from '../../utilities/auth';
 
-export default function handler(req, res) {
+export default async function handler(req, res) {
   // load and parse the cookie
   const cookie = req.headers.cookie || ''
 
@@ -18,7 +18,9 @@ export default function handler(req, res) {
       const newToken = createJWT(user)
       setCookie(res, { name: 'token', data: newToken })
     }
+
+    const web3Name = await Kilt.Did.Web3Names.queryWeb3NameForDid(user)
     // send user and 200
-    res.status(200).send(user)
+    res.status(200).send(web3Name ? web3Name : user)
   }
 }
