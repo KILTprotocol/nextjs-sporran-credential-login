@@ -39,7 +39,7 @@ export function setCookie(res, { name, data }) {
     httpOnly: true, 
     path: '/',
     secure: true,
-    domain: 'localhost',
+    domain: process.env.ORIGIN, 
     expires: new Date((new Date().getTime() + ms(process.env.JWT_EXPIRY))) 
   }));
 }
@@ -58,7 +58,7 @@ export function clearCookie(res, { name }) {
     httpOnly: true, 
     path: '/',
     secure: true,
-    domain: 'localhost', 
+    domain: process.env.ORIGIN, 
     expires: new Date(0) 
   }));
 }
