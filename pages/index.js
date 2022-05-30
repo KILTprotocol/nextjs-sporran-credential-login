@@ -31,6 +31,7 @@ export default function Home() {
           <h1>Home Page</h1>
           <Button onClick={testSecretPage}>GO TO SECRET PAGE</Button>
           <Button onClick={testSecretApi}>GET SECRET MESSAGE</Button>
+          <Button onClick={logout}>CLEAR COOKIES</Button>
         </Card>
       </Page.Content>
     </Page>
