@@ -36,10 +36,10 @@ export default function useSporran () {
       sessionId,
       challenge,
       dappName,
-      dAppEncryptionKeyId,
+      dAppEncryptionKeyUri,
     } = await values.json();
 
-    const session = await sporran.startSession(dappName, dAppEncryptionKeyId, challenge);
+    const session = await sporran.startSession(dappName, dAppEncryptionKeyUri, challenge);
     
     const valid = await fetch('/api/session', { 
       method: 'POST', 
