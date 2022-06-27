@@ -53,8 +53,7 @@ export async function relationships() {
 }
 
 export async function getFullDid() {
-  const { identifier } = Did.DidUtils.parseDidUri(process.env.VERIFIER_DID_URI)
-  const fullDid = await Did.FullDidDetails.fromChainInfo(identifier)
+  const fullDid = await Did.FullDidDetails.fromChainInfo(process.env.VERIFIER_DID_URI)
   return fullDid
 }
 
