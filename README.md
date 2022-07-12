@@ -20,16 +20,39 @@ Lets get going! Lets see how you can start a web3 DID login with credentials ver
 
 `Node` installed and [sporran wallet](https://github.com/BTE-Trusted-Entity/sporran-extension/tree/main) for testing use the test sporran wallet. For installation follow the steps in the sporran wallet repository.
 
-### Verifier Setup
 
-In order to use the web3 login, the service needs its own DID and provide a [well known domain linkage credential](https://identity.foundation/specs/did-configuration/). A well known domain linkage credential provides a credential for users to verify the domain belongs to the given service. Creating a way to share public keys with the application and user.
+### Setup
 
-You can create and attest your well known domain linkage credential or you can use the verification setup tool in the [KILT Distillery CLI](https://github.com/KILTprotocol/kilt-distillery-cli/).
+Clone the repository and go into the folder or you can setup a whole project from start to finish following the  [KILT Distillery CLI](https://github.com/KILTprotocol/kilt-distillery-cli/).
 
-Use the KILT Distillery CLI to setup:
+In order to set up the application several environment variables and files must be set up manually or through the Distillery:
 
 - .env
 - didConfiguration.json
+
+### Environment variables
+
+The following variables must be generated. This can be done via the Distillery or manually.
+
+```js
+DAPP_NAME='NAME OF APPLICATION'
+JWT_SECRET='JSON WEB TOKEN SECRET HERE'
+JWT_EXPIRY='TIME WITH DEMONINATION E.G. Seconds (s) or Hours (h) or days (d)'
+JWT_RENEW='TRUE or FALSE'
+ORIGIN='ORGIN OF THE APPLCIATION'
+WSS_ADDRESS='CONNECT TO CHAIN'
+VERIFIER_MNEMONIC="Enter your twelve word mnemonic phrase here "
+VERIFIER_ADDRESS='Enter your address'
+VERIFIER_DID_URI='Enter your DID URI'
+```
+
+Covering the JSON web token, known as JWT, management and creation is out of the scope of the project.
+
+#### Verifier Setup
+
+In order to use the web3 login, the service needs its own DID and provide a [well known domain linkage credential](https://identity.foundation/specs/did-configuration/). A well known domain linkage credential provides a credential for users to verify the domain belongs to the given service. Creating a way to share public keys with the application and user. The DID configuration is used to prevent replay attacks and man in the middle attacks, more details can be found in the [credential Api specification](https://github.com/KILTprotocol/credential-api#man-in-the-middle).
+
+You can create and attest your well known domain linkage credential or you can use the verification setup tool in the [KILT Distillery CLI](https://github.com/KILTprotocol/kilt-distillery-cli/).
 
 After you have a create the well known domain linkage for the application, you will need to add it to the `.env` file as shown below
 
@@ -75,12 +98,9 @@ Now you can add the well known domain linkage credential, `/.well-known/did-conf
 
 ```
 
-The DID configuration is used to prevent replay attacks and man in the middle attacks, more details can be found in the [credential Api specification](https://github.com/KILTprotocol/credential-api#man-in-the-middle).
+### Running the application
 
-### Setup
-
-Clone the repository and go into the folder or you can setup a whole project from start to finish following the  [KILT Distillery CLI](https://github.com/KILTprotocol/kilt-distillery-cli/).
-
+Now the applications necessary components have been added to the project, you can run the following commands to spin up the project.
 Now install with the following command
 
 ```js
