@@ -42,13 +42,13 @@ async function returnSessionValues(req, res) {
   await init({ address: process.env.WSS_ADDRESS })
   // create session data
   const fullDid = await getFullDid()
-  const dAppEncryptionKeyId = fullDid.assembleKeyId(fullDid.encryptionKey.id);
+  const dAppEncryptionKeyUri = fullDid.assembleKeyUri(fullDid.encryptionKey.id);
 
   const session = {
     sessionId: randomAsHex(),
     challenge: randomAsHex(),
     dappName: process.env.DAPP_NAME,
-    dAppEncryptionKeyId,
+    dAppEncryptionKeyUri,
   };
 
   // store it in session

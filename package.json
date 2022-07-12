@@ -8,8 +8,8 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@kiltprotocol/sdk-js": "0.26.0",
-    "@polkadot/util-crypto": "^8.4.1",
+    "@kiltprotocol/sdk-js": "0.28.0-rc.2",
+    "@polkadot/util-crypto": "^9.0.0",
     "cookie": "^0.4.2",
     "dotenv": "^15.0.0",
     "jsonwebtoken": "^8.5.1",
