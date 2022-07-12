@@ -46,6 +46,12 @@ VERIFIER_ADDRESS='Enter your address'
 VERIFIER_DID_URI='Enter your DID URI'
 ```
 
+#### Blockchain address
+
+Before you call any SDK functionality, you need to initialize the crypto libraries and configure the SDK. For the project, we'll be using Peregrine Testnet. This is done by calling await Kilt.init({ address }) where address is the address of the full node you want to connect to. For the project, use `wss://peregrine.kilt.io/parachain-public-ws`. Add the address to your `.env` file as `WSS_ADDRESS`.
+
+#### JSON Web token
+
 Covering the JSON web token, known as JWT, management and creation is out of the scope of the project.
 
 #### Verifier Setup
