@@ -5,6 +5,8 @@ import { init, disconnect, Did, KeyRelationship } from '@kiltprotocol/sdk-js';
 import { cryptoWaitReady, randomAsHex, signatureVerify } from '@polkadot/util-crypto';
 import ms from 'ms'
 
+const domain = process.env.ORIGIN
+
 export const cTypes = [
   {
     name: 'peregrine email',
@@ -39,7 +41,7 @@ export function setCookie(res, { name, data }) {
     httpOnly: true, 
     path: '/',
     secure: true,
-    domain: 'localhost',
+    domain: domain,
     expires: new Date((new Date().getTime() + ms(process.env.JWT_EXPIRY))) 
   }));
 }
@@ -58,7 +60,7 @@ export function clearCookie(res, { name }) {
     httpOnly: true, 
     path: '/',
     secure: true,
-    domain: 'localhost', 
+    domain: domain, 
     expires: new Date(0) 
   }));
 }
