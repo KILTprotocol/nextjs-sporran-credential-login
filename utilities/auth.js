@@ -1,11 +1,15 @@
-import { verify } from 'jsonwebtoken';
-import jwt from 'jsonwebtoken';
-import { serialize, parse } from 'cookie';
-import { init, disconnect, Did, KeyRelationship } from '@kiltprotocol/sdk-js';
-import { cryptoWaitReady, randomAsHex, signatureVerify } from '@polkadot/util-crypto';
+import { verify } from 'jsonwebtoken'
+import jwt from 'jsonwebtoken'
+import { serialize, parse } from 'cookie'
+import { init, disconnect, Did, KeyRelationship } from '@kiltprotocol/sdk-js'
+import {
+  cryptoWaitReady,
+  randomAsHex,
+  signatureVerify,
+} from '@polkadot/util-crypto'
 import ms from 'ms'
 
-const domain = process.env.ORIGIN
+const domain = 'web3login-demo.kilt.io'
 
 export const cTypes = [
   {
@@ -37,13 +41,16 @@ export const cTypes = [
 
 export function setCookie(res, { name, data }) {
   // set httpOnly token cookie for future auth
-  res.setHeader('Set-Cookie', serialize(name, data, { 
-    httpOnly: true, 
-    path: '/',
-    secure: true,
-    domain: domain,
-    expires: new Date((new Date().getTime() + ms(process.env.JWT_EXPIRY))) 
-  }));
+  res.setHeader(
+    'Set-Cookie',
+    serialize(name, data, {
+      httpOnly: true,
+      path: '/',
+      secure: true,
+      domain: domain,
+      expires: new Date(new Date().getTime() + ms(process.env.JWT_EXPIRY)),
+    })
+  )
 }
 
 export function createJWT(subject) {
@@ -56,13 +63,16 @@ export function createJWT(subject) {
 
 export function clearCookie(res, { name }) {
   // override the httpOnly auth token and expire it
-  res.setHeader('Set-Cookie', serialize(name, 'deleted', { 
-    httpOnly: true, 
-    path: '/',
-    secure: true,
-    domain: domain, 
-    expires: new Date(0) 
-  }));
+  res.setHeader(
+    'Set-Cookie',
+    serialize(name, 'deleted', {
+      httpOnly: true,
+      path: '/',
+      secure: true,
+      domain: domain,
+      expires: new Date(0),
+    })
+  )
 }
 
 export function getCookieData({ name, cookie }) {
@@ -73,7 +83,7 @@ export function getCookieData({ name, cookie }) {
     const secret = process.env.JWT_SECRET
     const decoded = verify(token, secret)
     data = decoded.sub
-  } catch(e) {
+  } catch (e) {
     data = null
   }
   return data
@@ -90,24 +100,24 @@ export async function getDidFromValidSignature({ input, output }) {
 
   // resolve the client's did document
   const didUri = output.didKeyUri.split('#').shift()
-  const didDocument = await Did.DidResolver.resolveDoc(didUri);
+  const didDocument = await Did.DidResolver.resolveDoc(didUri)
   if (!didDocument) {
-    throw new Error('Could not resolve DID');
+    throw new Error('Could not resolve DID')
   }
 
   // get the public auth key from did doc
-  const { details } = didDocument;
-  const publicKey = details.getKeys(KeyRelationship.authentication).pop();
+  const { details } = didDocument
+  const publicKey = details.getKeys(KeyRelationship.authentication).pop()
   if (!publicKey) {
-    throw new Error('Could not find the key');
+    throw new Error('Could not find the key')
   }
 
   // verify the signature
   const isValid =
-    signatureVerify(input, output.signature, publicKey.publicKeyHex)
-      .isValid === true;
+    signatureVerify(input, output.signature, publicKey.publicKeyHex).isValid ===
+    true
 
-  // disconnect 
+  // disconnect
   await disconnect()
 
   return isValid ? didUri : null
