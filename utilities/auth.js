@@ -39,7 +39,7 @@ export function setCookie(res, { name, data }) {
     path: '/',
     secure: true,
     domain: 'localhost',
-    expires: new Date((new Date().getTime() + process.env.JWT_EXPIRY )) 
+    expires: new Date((new Date().getTime() + process.env.JWT_EXPIRY)) 
   }));
 }
 

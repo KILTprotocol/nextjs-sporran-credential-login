@@ -10,17 +10,17 @@ The flow from the application
 
 The Web3 DID login with credential verification gives a new flow for authentication by giving the control of the users data back into their hands, whilst providing utility into the builders of the application and unloading the burden of users personal data.
 
-You can make applications that require credentials to access parts of the services. The application is using the utility of the DID by creating a secure session between the client and backend of the applciation through the frontend as messaging service.
+You can make applications that require credentials to access parts of the services. The application leverages users' DIDs, which allow creating a secure session between the client and the backend of the application through the frontend as messaging service.
 
 One example of the KILT Credential is the web3 Login service. We will explore that in this repository.
 
-For example, having a credential for the user's shipping information, the database links the user DID or KILT Credential to specific hashes of stored credentials. When someone wants to make a purchase, they can provide the data to the site and not rely on a centralised service.
+For example, having a credential for the user's shipping information, the database links the user DID or KILT Credential to specific hashes of stored credentials. When someone wants to make a purchase, they can provide the data to the site and not rely on a centralized service.
 
-Consider a user, they comes to the website and want to use a service needing shipping information and a way to contact the user. The website accepts credentials issued by socialKYC as they trust the service. This user can provide the website with the credentials to verify the given information, and the application can validate the credentials by querying the KILT chain.
+Consider a user who comes to the website and wants to use a service needing shipping information and a way to contact the user. The website accepts credentials issued by socialKYC as they trust the service. This user can provide the website with the credentials to verify the given information, and the application can validate the credentials by querying the KILT chain.
 
 Once confirmed, the application can create a unique login with the KILT Credential hash plus other information, such as a password. After creating the login, the application can delete all personal information and store any credential hashes for later uses.
 
-Now, the user wants to buy an item from your store or uses a service that requires information about shipping. Instead of the user entering or the application knowing the personal information, the website can request a new or existing credential the user owns, assoicated to a given CType. The website validates the information, creates the order, issues an invoice and deletes all personal information afterwards. The user can rely on the website for getting the information and feel comfortable with the process of trust.
+Now, the user wants to buy an item from your store or uses a service that requires information about shipping. Instead of the user entering or the application knowing the personal information, the website can request a new or existing credential the user owns, associated with a given CType. The website validates the information, creates the order, issues an invoice, and deletes all personal information afterward. The user benefits from a convenient way of providing the website with the reliable information it needs for processing their order while retaining control and insight that is not necessarily given when platforms exchange data about them directly.
 
 The utilities can be expanded further. Let's look at the credential login process now and go over what each step is doing and where you can take the code and add it to your existing project or start from scratch from this point.
 
@@ -30,18 +30,20 @@ This code is not for production use. It serves as an example workflow for accept
 
 ## Getting Started
 
-Lets get going! Lets see how you can start a web3 DID login with credentials verification.
+Let's get going! Let us see how you can start a web3 DID login with credentials verification.
 
 ### Requirements
 
-`Node` installed and [sporran wallet](https://github.com/BTE-Trusted-Entity/sporran-extension/tree/main) for testing use the test sporran wallet. For installation follow the steps in the sporran wallet repository.
+`Node` installed and the [sporran wallet](https://github.com/BTE-Trusted-Entity/sporran-extension/tree/main) added to your browser (currently works with Firefox and Chromium-based browsers).
+We recommend using the internal/testing version of Sporran for development purposes, which allows you to connect to the Peregrine testnet.
+Follow the steps in the sporran wallet repository to build and install.
 
 
 ### Setup
 
-Clone the repository and go into the folder or you can setup a whole project from start to finish following the  [KILT Distillery CLI](https://github.com/KILTprotocol/kilt-distillery-cli/).
+Clone the repository and go into the folder or you can set up a whole project from start to finish following the  [KILT Distillery CLI](https://github.com/KILTprotocol/kilt-distillery-cli/).
 
-In order to set up the application several environment variables and files must be set up manually or through the Distillery:
+To set up the application several environment variables and files must be set up manually or through the Distillery:
 
 - .env
 - didConfiguration.json
@@ -53,11 +55,11 @@ The following variables must be generated. This can be done via the Distillery o
 ```js
 DAPP_NAME='NAME OF APPLICATION'
 JWT_SECRET='JSON WEB TOKEN SECRET HERE'
-JWT_EXPIRY='TIME WITH DEMONINATION E.G. Seconds (s) or Hours (h) or days (d)'
+JWT_EXPIRY='TIME WITH DENOMINATION E.G. Seconds (s) or Hours (h) or days (d)'
 JWT_RENEW='TRUE or FALSE'
-ORIGIN='ORGIN OF THE APPLCIATION'
-WSS_ADDRESS='CONNECT TO CHAIN'
-VERIFIER_MNEMONIC="Enter your twelve word mnemonic phrase here "
+ORIGIN='DOMAIN AT WHICH THE APPLICATION CAN BE ACCESSED, E.G. HTTP://LOCALHOST:3000'
+WSS_ADDRESS='URL OF THE FULL NODE TO CONNECT TO'
+VERIFIER_MNEMONIC='Enter your twelve word mnemonic phrase here'
 VERIFIER_ADDRESS='Enter your address'
 VERIFIER_DID_URI='Enter your DID URI'
 ```
@@ -68,15 +70,15 @@ Before you call any SDK functionality, you need to initialize the crypto librari
 
 #### JSON Web token
 
-Covering the JSON web token, known as JWT, management and creation is out of the scope of the project.
+Covering the JSON web token, known as JWT, management, and creation is out of the scope of the project.
 
 #### Verifier Setup
 
-In order to use the web3 login, the service needs its own DID and provide a [well known domain linkage credential](https://identity.foundation/specs/did-configuration/). A well known domain linkage credential provides a credential for users to verify the domain belongs to the given service. Creating a way to share public keys with the application and user. The DID configuration is used to prevent replay attacks and man in the middle attacks, more details can be found in the [credential Api specification](https://github.com/KILTprotocol/credential-api#man-in-the-middle).
+In order to use the web3 login, the service needs its own DID and must provide a [well-known domain linkage credential](https://identity.foundation/specs/did-configuration/). A well-known domain linkage credential provides a credential for users to verify the domain belongs to the given service. Creating a way to share public keys with the application and user. The DID configuration is used to prevent replay attacks and man-in-the-middle attacks, more details can be found in the [credential Api specification](https://github.com/KILTprotocol/credential-api#man-in-the-middle).
 
 You can create and attest your well known domain linkage credential or you can use the verification setup tool in the [KILT Distillery CLI](https://github.com/KILTprotocol/kilt-distillery-cli/).
 
-After you have a create the well known domain linkage for the application, you will need to add it to the `.env` file as shown below
+After you have created the well-known domain linkage for the application, you will need to add it to the `.env` file as shown below
 
 ```BASH
 VERIFIER_MNEMONIC="Enter your twelve word mnemonic phrase here "
@@ -84,7 +86,7 @@ VERIFIER_ADDRESS=Enter your address
 VERIFIER_DID_URI=Enter your DID URI
 ```
 
-Now you can add the well known domain linkage credential, `/.well-known/did-configuration.json`, to a `public` folder of the application. The credential must be issued and matches the verifier DID’s.
+Now you can add the well-known domain linkage credential, `/.well-known/did-configuration.json`, to the `public` folder in the application source code. The credential must be issued by and to the verifier DID.
 
 ```JSON
 {
@@ -122,14 +124,14 @@ Now you can add the well known domain linkage credential, `/.well-known/did-conf
 
 ### Running the application
 
-Now the applications necessary components have been added to the project, you can run the following commands to spin up the project.
-Now install with the following command
+Now the application's necessary components have been added to the project, you can run the following commands to spin up the project.
+Now install with the following command:
 
 ```js
 npm run install 
 ```
 
-Once you have installed the application and the environmental variables are setup from [verifier setup](#verifier-setup), you can now start the application with the following command
+Once you have installed the application and the environmental variables are set up from the [verifier setup](#verifier-setup), you can now start the application with the following command:
 
 ```js
 npm run dev
