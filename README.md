@@ -8,7 +8,7 @@ The flow from the application
 
 ## What can you do with the KILT credential?
 
-The Web3 DID login with credential verification gives a new flow for authentication by giving the control of the users data back into their hands, whilst providing utility into the builders of the application and unloading the burden of users personal data.
+The Web3 DID login with credential verification gives a new flow for authentication by giving the control of the users' data back into their hands, whilst providing utility to the builders of the application and unloading the burden of managing and securing users' personal data.
 
 You can make applications that require credentials to access parts of the services. The application leverages users' DIDs, which allow creating a secure session between the client and the backend of the application through the frontend as messaging service.
 
