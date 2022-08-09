@@ -14,15 +14,16 @@ You can make applications that require credentials to access parts of the servic
 
 One example of the KILT Credential is the web3 Login service. We will explore that in this repository.
 
-For example, having a credential for the user's shipping information, the database links the user DID or KILT Credential to specific hashes of stored credentials. When someone wants to make a purchase, they can provide the data to the site and not rely on a centralized service.
+For example, having a credential for the user's information, the database links the user DID or KILT Credential to specific hashes of a stored credential. When someone wants to make a purchase, they can provide the data to the site and not rely on a centralized service.
+		
+The user visits a website and wants to use a service. A trust exchange between the application and user happens by providing the credential. The website would accept a credential issued by a trusted entity, and the application can validate the credentials information using the KILT blockchain.
 
-Consider a user who comes to the website and wants to use a service needing shipping information and a way to contact the user. The website accepts credentials issued by socialKYC as they trust the service. This user can provide the website with the credentials to verify the given information, and the application can validate the credentials by querying the KILT chain.
+Once confirmed, the application can forget the personal data if needed and create a unique login with the KILT Credential hash plus other information, such as a password. 
+		
+A user can buy an item from the store or use a service requiring personal data about the user. The user can submit the matching credential to prove ownership without the website storing personal information. If needed, the website can request a new credential to provide more data associated with a given CType. The website validates the information, creates the order, issues an invoice, and deletes all personal information afterwards. The user benefits from a convenient way of providing the website with the reliable information it needs for processing its order while retaining control and knowing that the website isn't tracking its data or external entities.
+		
 
-Once confirmed, the application can create a unique login with the KILT Credential hash plus other information, such as a password. After creating the login, the application can delete all personal information and store any credential hashes for later uses.
-
-Now, the user wants to buy an item from your store or uses a service that requires information about shipping. Instead of the user entering or the application knowing the personal information, the website can request a new or existing credential the user owns, associated with a given CType. The website validates the information, creates the order, issues an invoice, and deletes all personal information afterward. The user benefits from a convenient way of providing the website with the reliable information it needs for processing their order while retaining control and insight that is not necessarily given when platforms exchange data about them directly.
-
-The utilities can be expanded further. Let's look at the credential login process now and go over what each step is doing and where you can take the code and add it to your existing project or start from scratch from this point.
+Entities can benefit from holding a DID and credentials to form a trust exchange. Let's look at the credential login process now and go over each step and where you can take the code and add it to your existing project or start from scratch from this point.
 
 ## Disclaimer
 
