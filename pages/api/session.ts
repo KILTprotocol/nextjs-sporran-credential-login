@@ -14,7 +14,7 @@ import {
  */
 async function validateSession(req, res) {
   await connect(process.env.WSS_ADDRESS)
-  console.log('validate Session')
+
   // the payload from client
   const { encryptionKeyId, encryptedChallenge, nonce, sessionId } = JSON.parse(
     req.body

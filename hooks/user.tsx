@@ -30,7 +30,6 @@ export default function useUser() {
     await presentCredential()
 
     const result = await (await fetch('/api/user')).text()
-    console.log('1', result)
 
     _user = !!result ? result : null
     setUser(_user)
