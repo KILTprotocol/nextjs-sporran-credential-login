@@ -56,12 +56,17 @@ export default function useSporran() {
 
   useEffect(() => {
     const inState = !!sporran
+    //@ts-ignore
     const inWindow = window.kilt && window.kilt.sporran
     if (!inState && inWindow) {
+      //@ts-ignore
+
       setSporran(window.kilt.sporran)
     }
 
     if (!inState) {
+      //@ts-ignore
+
       window.kilt = new Proxy(
         {},
         {
