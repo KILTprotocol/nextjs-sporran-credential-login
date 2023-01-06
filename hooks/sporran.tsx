@@ -37,6 +37,7 @@ export default function useSporran() {
 
     sessionObject.session.listen(async (message) => {
       const result = await fetch('/api/verify', {
+        credentials: 'include',
         method: 'POST',
         headers: { ContentType: 'application/json' },
         body: JSON.stringify({ sessionId, message }),
@@ -64,6 +65,7 @@ export default function useSporran() {
     )
 
     const valid = await fetch('/api/session', {
+      credentials: 'include',
       method: 'POST',
       headers: { ContentType: 'application/json' },
       body: JSON.stringify({ ...session, sessionId }),

@@ -10,7 +10,9 @@ export default function useUser() {
   useEffect(() => {
     ;(async () => {
       if (!!user) return
-      const result = await (await fetch('/api/user')).text()
+      const result = await (
+        await fetch('/api/user', { credentials: 'include' })
+      ).text()
 
       _user = !!result ? result : null
       setUser(_user)
@@ -18,7 +20,8 @@ export default function useUser() {
   }, [sessionObject])
 
   async function logout() {
-    const loggedOut = (await fetch('/api/logout')).ok
+    const loggedOut = (await fetch('/api/logout', { credentials: 'include' }))
+      .ok
     if (!loggedOut) return
     _user = null
     setUser(null)
@@ -30,7 +33,9 @@ export default function useUser() {
 
     await presentCredential()
 
-    const result = await (await fetch('/api/user')).text()
+    const result = await (
+      await fetch('/api/user', { credentials: 'include' })
+    ).text()
 
     _user = !!result ? result : null
     setUser(_user)
