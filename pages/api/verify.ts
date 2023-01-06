@@ -4,18 +4,12 @@ import {
   Credential,
   IRequestCredential,
   Did,
-  disconnect,
-  connect,
+  IEncryptedMessage,
+  DidResourceUri,
 } from '@kiltprotocol/sdk-js'
 import storage from 'memory-cache'
 import { exit, methodNotFound } from '../../utilities/helpers'
-import {
-  DID_URI,
-  getFullDid,
-  getKeypairs,
-  makeDecryptCallback,
-  makeEncryptCallback,
-} from '../../utilities/verifier'
+import { decrypt, DID_URI, encrypt } from '../../utilities/verifier'
 import {
   requestCredentialContent,
   clearCookie,
@@ -28,25 +22,22 @@ import {
  * if credential is attested and meets
  */
 async function verifyRequest(req, res) {
-  await connect(process.env.WSS_ADDRESS)
-
   // the payload from client
-  const { sessionId, message: rawMessage } = JSON.parse(req.body)
+  const { sessionId, message } = JSON.parse(req.body)
+
+  const encryptedMessage: IEncryptedMessage = message
 
   // load the session, fail if null or missing challenge request
   const session = storage.get(sessionId)
-  if (!session) return exit(res, 500, 'invalid session')
+  // if (!session) return exit(res, 500, 'invalid session')
 
   const { challenge } = session
-  if (!challenge) return exit(res, 500, 'invalid challenge request')
-  const { keyAgreement } = await getKeypairs()
-  const keyAgreementSigner = makeDecryptCallback(keyAgreement)
+  // if (!challenge) return exit(res, 500, 'invalid challenge request')
 
   // get decrypted message
+  const decryptedMessage = await Message.decrypt(encryptedMessage, decrypt)
 
-  const message = await Message.decrypt(rawMessage, keyAgreementSigner)
-
-  const messageBody = message.body
+  const messageBody = decryptedMessage.body
   const { type, content } = messageBody
   // fail if incorrect message type
   if (type !== 'submit-credential') {
@@ -56,7 +47,7 @@ async function verifyRequest(req, res) {
 
   // load the credential, check attestation and ownership
   //@ts-ignore
-  const credential = Credential.fromClaim(content[0].request.claim)
+  const credential = Credential.fromClaim(content[0].claim)
   // fail if not attested or owner
 
   await Credential.verifyCredential(credential, { challenge })
@@ -78,11 +69,10 @@ async function verifyRequest(req, res) {
 
   // if valid create JWT from DID, set httpOnly cookie, return 200 with DID
   const token = createJWT(did)
-
   setCookie(res, { name: 'token', data: token })
 
   res.status(200).send(did)
-  await disconnect()
+
   // return success
   return res.status(200).end()
 }
@@ -92,7 +82,6 @@ async function verifyRequest(req, res) {
  * Sporran session to prompt credential sharing
  */
 async function getRequest(req, res) {
-  await connect(process.env.WSS_ADDRESS)
   const { sessionId } = req.query
 
   // load the session
@@ -100,17 +89,17 @@ async function getRequest(req, res) {
   if (!session) return exit(res, 500, 'invalid session')
 
   // load encryptionKeyUri and the did, making sure it's confirmed
-  const { did, didConfirmed, encryptionKeyUri } = session
+  const { did, didConfirmed, encryptionKeyId, nonce } = session
 
-  const encryptionKey = await Did.resolveKey(encryptionKeyUri)
+  const encryptionKey = Did.parse(encryptionKeyId)
 
   if (!encryptionKey) {
-    return exit(res, 500, `failed resolving ${encryptionKeyUri}`)
+    return exit(res, 500, `failed resolving ${encryptionKeyId}`)
   }
 
   if (!did || !didConfirmed) return exit(res, 500, 'unconfirmed did')
 
-  if (!encryptionKeyUri) return exit(res, 500, 'missing encryptionKeyUri')
+  if (!encryptionKeyId) return exit(res, 500, 'missing encryptionKeyId')
 
   // set the challenge
   const challenge = Utils.UUID.generate()
@@ -121,29 +110,19 @@ async function getRequest(req, res) {
     content: { ...requestCredentialContent, challenge },
   }
 
-  const message = Message.fromBody(
-    messageBody,
-    DID_URI,
-    encryptionKey.controller
-  )
+  const message = Message.fromBody(messageBody, DID_URI, encryptionKey.did)
 
   if (!message) return exit(res, 500, 'failed to construct message')
-
-  const fullDid = await getFullDid()
-
-  const { keyAgreement } = await getKeypairs()
-
-  const keyAgreementSigner = makeEncryptCallback(keyAgreement)
 
   // encrypt the message
   const output = await Message.encrypt(
     message,
-    keyAgreementSigner(fullDid.document),
-    encryptionKeyUri
+    encrypt,
+    `${encryptionKey.did}${encryptionKey.fragment}` as DidResourceUri
   )
 
   if (!output) return exit(res, 500, `failed to encrypt message`)
-  await disconnect()
+
   res.status(200).send(output)
 }
 

@@ -3,9 +3,9 @@ import jwt from 'jsonwebtoken'
 import { serialize, parse } from 'cookie'
 import {
   init,
-  disconnect,
   Did,
   IRequestCredentialContent,
+  connect,
 } from '@kiltprotocol/sdk-js'
 import { randomAsHex, signatureVerify } from '@polkadot/util-crypto'
 import ms from 'ms'
@@ -17,7 +17,7 @@ import {
 import { DID_URI, getFullDid, getKeypairs } from './verifier'
 import { assertionSigner } from './helpers'
 
-const domain = 'web3login-demo.kilt.io'
+const domain = process.env.DOMAIN
 
 export const requestCredentialContent: IRequestCredentialContent = {
   cTypes: [
@@ -51,9 +51,10 @@ export function setCookie(res, { name, data }) {
     'Set-Cookie',
     serialize(name, data, {
       httpOnly: true,
+
       path: '/',
       secure: true,
-      domain: domain,
+      domain,
       expires: new Date(new Date().getTime() + ms(process.env.JWT_EXPIRY)),
     })
   )
@@ -73,9 +74,10 @@ export function clearCookie(res, { name }) {
     'Set-Cookie',
     serialize(name, 'deleted', {
       httpOnly: true,
+
       path: '/',
       secure: true,
-      domain: domain,
+      domain,
       expires: new Date(0),
     })
   )
@@ -86,8 +88,11 @@ export function getCookieData({ name, cookie }) {
   try {
     // decode the httpOnly token and set the data
     const token = parse(cookie)[name]
+
     const secret = process.env.JWT_SECRET
+
     const decoded = verify(token, secret)
+
     data = decoded.sub
   } catch (e) {
     data = null
@@ -112,7 +117,7 @@ export async function getDidFromValidSignature({ input, output }) {
 
   // get the public auth key from did doc
   const { document } = didDocument
-  const { publicKey } = document.authentication[0]
+  const { publicKey } = document.assertionMethod[0]
   if (!publicKey) {
     throw new Error('Could not find the key')
   }
@@ -123,13 +128,14 @@ export async function getDidFromValidSignature({ input, output }) {
     true
 
   // disconnect
-  await disconnect()
 
   return isValid ? didUri : null
 }
 
 export async function setDomainLinkage() {
+  await connect(process.env.WSS_ADDRESS)
   const { assertion } = await getKeypairs()
+
   const fullDid = await getFullDid()
 
   const domainLinkageCredential = await createCredential(

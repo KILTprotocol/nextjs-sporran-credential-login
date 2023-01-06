@@ -1,20 +1,42 @@
+import { DidResourceUri, DidUri } from '@kiltprotocol/sdk-js'
 import { useState, useEffect } from 'react'
-import { InjectedWindowProvider } from '../types/types'
+import {
+  IEncryptedMessageV1,
+  InjectedWindowProvider,
+  PubSubSessionV1,
+  PubSubSessionV2,
+} from '../types/types'
 
 export default function useSporran() {
-  const [sporran, setSporran] = useState<InjectedWindowProvider>(null)
-  const [session, setSession] = useState(null)
+  const [sporran, setSporran] =
+    useState<InjectedWindowProvider<PubSubSessionV1 | PubSubSessionV2>>(null)
+  const [sessionObject, setSessionObject] = useState<{
+    sessionId: string
+    session: PubSubSessionV1 | PubSubSessionV2
+  }>(null)
   const [waiting, setWaiting] = useState(false)
 
   async function presentCredential() {
     setWaiting(true)
-    if (!session) throw Error('startSession first')
+    if (!sessionObject) throw Error('startSession first')
 
-    const { sessionId } = session
-    const result = await fetch(`/api/verify?sessionId=${sessionId}`)
+    const { sessionId } = sessionObject
+    const result = await fetch(`/api/verify?sessionId=${sessionId}`, {
+      method: 'GET',
+    })
+    console.log('these are the results', JSON.stringify(result))
+
     const message = await result.json()
+    const encryptedMessage: IEncryptedMessageV1 = {
+      ciphertext: message.ciphertext,
+      nonce: message.nonce,
+      receiverKeyId: message.receiverKeyUri as DidResourceUri,
+      senderKeyId: message.senderKeyUri as DidResourceUri,
+    }
+    //@ts-ignore
+    await sessionObject.session.send(encryptedMessage)
 
-    session.listen(async (message) => {
+    sessionObject.session.listen(async (message) => {
       const result = await fetch('/api/verify', {
         method: 'POST',
         headers: { ContentType: 'application/json' },
@@ -22,9 +44,9 @@ export default function useSporran() {
       })
 
       setWaiting(false)
-    })
 
-    await session.send(message)
+      await sessionObject.session.send(message)
+    })
   }
 
   async function startSession() {
@@ -33,12 +55,12 @@ export default function useSporran() {
 
     if (!values.ok) throw Error(values.statusText)
 
-    const { sessionId, challenge, dappName, dAppEncryptionKeyUri } =
+    const { sessionId, challenge, dappName, dAppEncryptionKeyId } =
       await values.json()
 
     const session = await sporran.startSession(
       dappName,
-      dAppEncryptionKeyUri,
+      dAppEncryptionKeyId,
       challenge
     )
 
@@ -51,7 +73,7 @@ export default function useSporran() {
     if (!valid.ok) throw Error(valid.statusText)
 
     setWaiting(false)
-    setSession({ sessionId, ...session })
+    setSessionObject({ sessionId, session })
   }
 
   useEffect(() => {
@@ -83,7 +105,7 @@ export default function useSporran() {
 
   return {
     sporran,
-    session,
+    sessionObject,
     waiting,
     startSession,
     presentCredential,

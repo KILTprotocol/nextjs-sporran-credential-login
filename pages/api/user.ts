@@ -4,11 +4,9 @@ import {
   createJWT,
   getCookieData,
 } from '../../utilities/auth'
-import { ConfigService, disconnect, connect, Did } from '@kiltprotocol/sdk-js'
+import { ConfigService, Did } from '@kiltprotocol/sdk-js'
 
 export default async function handler(req, res) {
-  await connect(process.env.WSS_ADDRESS)
-
   // load and parse the cookie
   const cookie = req.headers.cookie || ''
   // get the user from cookie
@@ -17,7 +15,6 @@ export default async function handler(req, res) {
   if (!user) {
     // if null ensure cookie is cleared & 401
     clearCookie(res, { name: 'token' })
-    await disconnect()
 
     res.status(401).send('')
   } else {
@@ -31,7 +28,6 @@ export default async function handler(req, res) {
 
     const result = await api.query.web3Names.names(Did.toChain(user))
 
-    await disconnect()
     // send user and 200
     res.status(200).send(result.isNone ? user : result.toHuman())
   }

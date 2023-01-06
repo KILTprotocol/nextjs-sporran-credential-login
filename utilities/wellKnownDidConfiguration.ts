@@ -10,7 +10,6 @@ import {
   DidResourceUri,
 } from '@kiltprotocol/sdk-js'
 import {
-  CredentialSubject,
   DomainLinkageCredential,
   fromCredentialIRI,
   toCredentialIRI,

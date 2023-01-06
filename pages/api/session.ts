@@ -2,19 +2,11 @@ import { randomAsHex } from '@polkadot/util-crypto'
 import storage from 'memory-cache'
 import { decryptChallenge, DID_URI, getFullDid } from '../../utilities/verifier'
 import { exit, methodNotFound } from '../../utilities/helpers'
-import {
-  Did,
-  DidResourceUri,
-  disconnect,
-  init,
-  connect,
-} from '@kiltprotocol/sdk-js'
+import { Did, DidResourceUri, connect } from '@kiltprotocol/sdk-js'
 /** validateSession
  * checks that an established session is valid
  */
 async function validateSession(req, res) {
-  await connect(process.env.WSS_ADDRESS)
-
   // the payload from client
   const { encryptionKeyId, encryptedChallenge, nonce, sessionId } = JSON.parse(
     req.body
@@ -46,10 +38,10 @@ async function validateSession(req, res) {
   storage.put(sessionId, {
     ...session,
     did: encryptionKey.controller,
-    encryptionKeyUri: encryptionKeyId,
+    encryptionKeyId,
     didConfirmed: true,
   })
-  await disconnect()
+
   // return success
   res.status(200).end()
 }
@@ -59,23 +51,21 @@ async function validateSession(req, res) {
  */
 async function returnSessionValues(req, res) {
   await connect(process.env.WSS_ADDRESS)
-
   // create session data
   const fullDid = await getFullDid()
 
-  const dAppEncryptionKeyUri: DidResourceUri = `${DID_URI}${fullDid.document.keyAgreement[0].id}`
+  const dAppEncryptionKeyId: DidResourceUri = `${DID_URI}${fullDid.document.keyAgreement[0].id}`
 
   const session = {
     sessionId: randomAsHex(),
     challenge: randomAsHex(),
     dappName: process.env.DAPP_NAME,
-    dAppEncryptionKeyUri,
+    dAppEncryptionKeyId,
   }
 
   // store it in session
   storage.put(session.sessionId, session)
 
-  await disconnect()
   // return session data
   res.status(200).json(session)
 }

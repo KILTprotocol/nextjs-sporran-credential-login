@@ -6,7 +6,7 @@ import {
   sr25519PairFromSeed,
   keyExtractPath,
   mnemonicToMiniSecret,
-  cryptoWaitReady,
+  naclSeal,
 } from '@polkadot/util-crypto'
 import {
   Utils,
@@ -15,13 +15,15 @@ import {
   NewDidEncryptionKey,
   DidUri,
   DecryptCallback,
-  KiltEncryptionKeypair,
   DidDocument,
   EncryptCallback,
-  connect,
+  ConfigService,
+  Blockchain,
+  DidResourceUri,
 } from '@kiltprotocol/sdk-js'
 import { Crypto } from '@kiltprotocol/utils'
 import { Keypair } from '@polkadot/util-crypto/types'
+import { authenticationSigner } from './helpers'
 
 export type EncryptionKeyToolCallback = (
   didDocument: DidDocument
@@ -37,7 +39,6 @@ export const MNEMONIC = process.env.VERIFIER_MNEMONIC
 export const DID_URI = process.env.VERIFIER_DID_URI as DidUri
 
 export async function getAccount() {
-  await cryptoWaitReady()
   const signingKeyPairType = 'sr25519'
   const keyring = new Utils.Keyring({
     ss58Format: 38,
@@ -74,9 +75,30 @@ export async function getKeypairs(): Promise<Keypairs> {
 }
 
 export async function getFullDid() {
-  await connect(process.env.WSS_ADDRESS)
-
+  const api = ConfigService.get('api')
   const fullDid = await Did.resolve(DID_URI)
+
+  const { authentication, assertion } = await getKeypairs()
+
+  if (fullDid.document.assertionMethod === undefined) {
+    const extrinsic = api.tx.did.setAttestationKey(
+      Did.publicKeyToChain(assertion)
+    )
+
+    const account = await getAccount()
+
+    const tx = await Did.authorizeTx(
+      fullDid.document.uri,
+      extrinsic,
+      await authenticationSigner({
+        authentication,
+      }),
+      account.address as `4${string}`
+    )
+
+    await Blockchain.signAndSubmitTx(tx, account)
+  }
+
   return fullDid
 }
 
@@ -101,38 +123,39 @@ export async function decryptChallenge(
   return Utils.Crypto.u8aToHex(decrypted)
 }
 
-export function makeEncryptCallback(
-  keyAgreementKey: KiltEncryptionKeypair
-): EncryptionKeyToolCallback {
-  return (didDocument) => {
-    return async function encryptCallback({ data, peerPublicKey }) {
-      const keyId = didDocument.keyAgreement?.[0].id
-      if (!keyId) {
-        throw new Error(`Encryption key not found in did "${didDocument.uri}"`)
-      }
-      const { box, nonce } = Crypto.encryptAsymmetric(
-        data,
-        peerPublicKey,
-        keyAgreementKey.secretKey
-      )
-      return {
-        nonce,
-        data: box,
-        keyUri: `${didDocument.uri}${keyId}`,
-      }
-    }
+export async function encrypt({
+  data,
+  peerPublicKey,
+}: Parameters<EncryptCallback>[0]) {
+  const { keyAgreement } = await getKeypairs()
+  const { document } = await getFullDid()
+
+  const { sealed, nonce } = naclSeal(
+    data,
+    keyAgreement.secretKey,
+    peerPublicKey
+  )
+
+  return {
+    data: sealed,
+    nonce,
+    keyUri: `${document.uri}${document.keyAgreement[0].id}` as DidResourceUri,
   }
 }
-export function makeDecryptCallback(
-  keyAgreementKey: KiltEncryptionKeypair
-): DecryptCallback {
-  return async function decryptCallback({ data, nonce, peerPublicKey }) {
-    const decrypted = Crypto.decryptAsymmetric(
-      { box: data, nonce },
-      peerPublicKey,
-      keyAgreementKey.secretKey
-    )
-    if (decrypted === false) throw new Error('Decryption failed')
-    return { data: decrypted }
+
+export async function decrypt({
+  data,
+  nonce,
+  peerPublicKey,
+}: Parameters<DecryptCallback>[0]) {
+  const { keyAgreement } = await getKeypairs()
+
+  const decrypted = naclOpen(data, nonce, peerPublicKey, keyAgreement.secretKey)
+  if (!decrypted) {
+    throw new Error('Failed to decrypt with given key')
+  }
+
+  return {
+    data: decrypted,
   }
 }
