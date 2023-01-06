@@ -1,4 +1,4 @@
-import { DidResourceUri, DidUri } from '@kiltprotocol/sdk-js'
+import { DidResourceUri } from '@kiltprotocol/sdk-js'
 import { useState, useEffect } from 'react'
 import {
   IEncryptedMessageV1,
@@ -24,7 +24,6 @@ export default function useSporran() {
     const result = await fetch(`/api/verify?sessionId=${sessionId}`, {
       method: 'GET',
     })
-    console.log('these are the results', JSON.stringify(result))
 
     const message = await result.json()
     const encryptedMessage: IEncryptedMessageV1 = {

@@ -16,6 +16,7 @@ import {
   createJWT,
   setCookie,
 } from '../../utilities/auth'
+import { request } from 'http'
 
 /** verifyRequest
  * verifies credential presentation, returns 200
@@ -25,33 +26,44 @@ async function verifyRequest(req, res) {
   // the payload from client
   const { sessionId, message } = JSON.parse(req.body)
 
-  const encryptedMessage: IEncryptedMessage = message
+  const encryptedMessage = message
 
   // load the session, fail if null or missing challenge request
   const session = storage.get(sessionId)
-  // if (!session) return exit(res, 500, 'invalid session')
+  if (!session) return exit(res, 500, 'invalid session')
 
   const { challenge } = session
-  // if (!challenge) return exit(res, 500, 'invalid challenge request')
+  if (!challenge) return exit(res, 500, 'invalid challenge request')
 
-  // get decrypted message
-  const decryptedMessage = await Message.decrypt(encryptedMessage, decrypt)
-
-  const messageBody = decryptedMessage.body
-  const { type, content } = messageBody
-  // fail if incorrect message type
-  if (type !== 'submit-credential') {
-    res.statusMessage = 'unexpected message type'
-    return res.status(500).end()
+  const correctMessage: IEncryptedMessage = {
+    ciphertext: encryptedMessage.ciphertext,
+    receiverKeyUri: encryptedMessage.receiverKeyId as DidResourceUri,
+    senderKeyUri: encryptedMessage.senderKeyId as DidResourceUri,
+    nonce: encryptedMessage.nonce,
   }
 
+  // get decrypted message
+  const decryptedMessage = await Message.decrypt(correctMessage, decrypt)
+
+  const messageBody = decryptedMessage.body
+
+  const { type, content } = messageBody
+
+  // fail if incorrect message type
+  // if (type !== 'submit-credential') {
+  //   res.statusMessage = 'unexpected message type'
+  //   return res.status(500).end()
+  // }
+
   // load the credential, check attestation and ownership
-  //@ts-ignore
-  const credential = Credential.fromClaim(content[0].claim)
+  const credential = Credential.fromClaim(content[0].request.claim)
+
   // fail if not attested or owner
 
   await Credential.verifyCredential(credential, { challenge })
+
   const { owner } = credential.claim
+
   const did = owner.includes(':light:')
     ? `did:kilt:${owner.split(':')[3]}`
     : owner
