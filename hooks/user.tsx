@@ -6,18 +6,20 @@ export default function useUser() {
   const [user, setUser] = useState(_user)
   const { sporran, sessionObject, startSession, presentCredential } =
     useSporran()
-
+  console.log(user)
   useEffect(() => {
     ;(async () => {
       if (!!user) return
       const result = await (
-        await fetch('/api/user', { credentials: 'include' })
+        await fetch('/api/user', {
+          credentials: 'include',
+        })
       ).text()
 
       _user = !!result ? result : null
       setUser(_user)
     })()
-  }, [sessionObject])
+  }, [sessionObject, user])
 
   async function logout() {
     const loggedOut = (await fetch('/api/logout', { credentials: 'include' }))
@@ -33,12 +35,13 @@ export default function useUser() {
 
     await presentCredential()
 
-    const result = await (
-      await fetch('/api/user', { credentials: 'include' })
-    ).text()
-
-    _user = !!result ? result : null
-    setUser(_user)
+    setTimeout(async () => {
+      const result = await (
+        await fetch('/api/user', { credentials: 'include' })
+      ).text()
+      _user = !!result ? result : null
+      setUser(_user)
+    }, 500)
   }
 
   return {

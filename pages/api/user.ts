@@ -9,6 +9,7 @@ import { ConfigService, Did } from '@kiltprotocol/sdk-js'
 export default async function handler(req, res) {
   // load and parse the cookie
   const cookie = req.headers.cookie || ''
+
   // get the user from cookie
   const user = getCookieData({ name: 'token', cookie })
 

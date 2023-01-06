@@ -16,7 +16,6 @@ import {
   createJWT,
   setCookie,
 } from '../../utilities/auth'
-import { request } from 'http'
 
 /** verifyRequest
  * verifies credential presentation, returns 200
@@ -72,7 +71,6 @@ async function verifyRequest(req, res) {
   // set JWT session token, issue privelaged response etc..
   // here we just set verified to true for other hypothetical calls
   storage.put(sessionId, { ...session, verified: true })
-
   if (!did) {
     // if invalid clear httpOnly cookie & send 401
     clearCookie(res, { name: 'token' })

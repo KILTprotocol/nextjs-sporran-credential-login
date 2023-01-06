@@ -45,10 +45,8 @@ export default function useSporran() {
         },
         body: JSON.stringify({ sessionId, message }),
       })
-
-      setWaiting(false)
-
       await sessionObject.session.send(message)
+      setWaiting(false)
     })
   }
 
