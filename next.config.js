@@ -3,8 +3,13 @@ module.exports = {
   async redirects() {
     return [
       {
+        destination: '/api/wellKnownDidConfig',
+        source: '/public/.well-known/did-configuration.json',
+        permanent: true,
+      },
+      {
+        destination: '/api/wellKnownDidConfig',
         source: '/.well-known/did-configuration.json',
-        destination: '/didConfiguration.json',
         permanent: true,
       },
     ]

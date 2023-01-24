@@ -1,5 +1,10 @@
-import { clearCookie, setCookie, createJWT, getCookieData } from '../../utilities/auth';
-import { Did } from '@kiltprotocol/sdk-js'
+import {
+  clearCookie,
+  setCookie,
+  createJWT,
+  getCookieData,
+} from '../../utilities/auth'
+import { ConfigService, Did } from '@kiltprotocol/sdk-js'
 
 export default async function handler(req, res) {
   // load and parse the cookie
@@ -10,7 +15,8 @@ export default async function handler(req, res) {
 
   if (!user) {
     // if null ensure cookie is cleared & 401
-    clearCookie(res, { name: 'token'})
+    clearCookie(res, { name: 'token' })
+
     res.status(401).send('')
   } else {
     // if user and renew reset the token
@@ -19,9 +25,11 @@ export default async function handler(req, res) {
       const newToken = createJWT(user)
       setCookie(res, { name: 'token', data: newToken })
     }
+    const api = ConfigService.get('api')
 
-    const web3Name = await Did.Web3Names.queryWeb3NameForDid(user)
+    const result = await api.query.web3Names.names(Did.toChain(user))
+
     // send user and 200
-    res.status(200).send(web3Name ? web3Name : user)
+    res.status(200).send(result.isNone ? user : result.toHuman())
   }
 }

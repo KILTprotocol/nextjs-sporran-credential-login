@@ -6,7 +6,6 @@
 .pnp.js
 /utils/encryptionKey.json
 .env
-/public/didConfiguration.json
 
 # testing
 /coverage
