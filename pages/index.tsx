@@ -20,6 +20,10 @@ export default function Home() {
     router.push('/secret/secret')
   }
 
+  async function claimerPage() {
+    router.push('/claimer/claimer')
+  }
+
   return (
     <Page>
       <Page.Header>
@@ -35,6 +39,7 @@ export default function Home() {
           {/* <h1>Under Maintenance</h1> */}
           <Button onClick={testSecretPage}>GO TO SECRET PAGE</Button>
           <Button onClick={testSecretApi}>GET SECRET MESSAGE</Button>
+          <Button onClick={claimerPage}>Claimer Page</Button>
           <Button onClick={logout}>CLEAR COOKIES</Button>
         </Card>
       </Page.Content>
