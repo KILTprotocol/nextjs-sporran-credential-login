@@ -42,19 +42,15 @@ async function claimData(request, response) {
     storage.put('ticket list', [credential])
   }
 
+  const valid = ticketList.map((val) => {
+    if (val.rootHash === credential.rootHash) return val
+  })
 
-    const valid = ticketList.map((val) => {
-      if (val.rootHash === credential.rootHash) return val
-    })
+  if (!valid) return response.status(200).send(credential)
 
-    if (!valid) return response.status(200).send(credential)
+  storage.put('ticket list', [...ticketList, credential])
 
-    storage.put('ticket list', [...ticketList, credential])
-
-    return response.status(200)
-
-
-
+  return response.status(200)
 }
 
 export default async function handler(req, res) {
