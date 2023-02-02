@@ -81,10 +81,8 @@ async function verifyRequest(req, res) {
   const token = createJWT(did)
   setCookie(res, { name: 'token', data: token })
 
-  res.status(200).send(did)
-
   // return success
-  return res.status(200).end()
+  return res.status(200).send(did)
 }
 
 /** getRequest
