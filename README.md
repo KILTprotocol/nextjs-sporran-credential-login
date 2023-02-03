@@ -63,6 +63,7 @@ WSS_ADDRESS='URL OF THE FULL NODE TO CONNECT TO'
 VERIFIER_MNEMONIC='Enter your twelve word mnemonic phrase here'
 VERIFIER_ADDRESS='Enter your address'
 VERIFIER_DID_URI='Enter your DID URI'
+DOMAIN='localhost'
 ```
 
 #### Blockchain address
