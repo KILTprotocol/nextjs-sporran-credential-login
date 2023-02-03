@@ -11,12 +11,14 @@ export default function useSporran() {
   async function getUserData(sessionObject) {
     setWaiting(true)
     if (!sessionObject) throw Error('startSession first')
+    console.log('HELLO')
     const accountAddress = '4sVF16RHiSr9v6cV1DBePnpxwgt5Mu3bo15PFks8TjH9LcHo'
     console.log('session data:', sessionObject)
     const { createDidExtrinsic, credential } =
       // @ts-ignore
       await window.kilt.sporran.getASUserData(accountAddress)
-    console.log('credential', credential)
+
+    console.log('credential', createDidExtrinsic, credential)
     const result = await fetch(`/api/post-registration`, {
       credentials: 'include',
       method: 'POST',
@@ -60,7 +62,7 @@ export default function useSporran() {
     } catch (e) {
       console.log(e)
     }
-    sessionObject.session.listen(async (msg) => {
+    sessionObject.session.listen(async (message) => {
       await fetch(`/api/post-credentials`, {
         credentials: 'include',
         method: 'POST',
@@ -68,9 +70,9 @@ export default function useSporran() {
           ContentType: 'application/json',
           Accept: 'application/json',
         },
-        body: JSON.stringify({ sessionId, msg }),
+        body: JSON.stringify({ sessionId, message }),
       })
-      await sessionObject.session.send(msg)
+      await sessionObject.session.send(message)
       setWaiting(false)
     })
   }
@@ -87,11 +89,12 @@ export default function useSporran() {
       dAppEncryptionKeyUri,
     } = await values.json()
     // @ts-ignore
-    const { sporran } = await window.kilt
+    const sporran = window.kilt.sporran
     if (!sporran) {
       console.log('errror')
       return
     }
+
     const session = await sporran.startSession(
       dappName,
       dAppEncryptionKeyUri,
