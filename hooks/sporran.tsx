@@ -1,11 +1,26 @@
 import { DidResourceUri } from '@kiltprotocol/sdk-js'
 import { useState, useEffect } from 'react'
 import {
+  ApiWindow,
   IEncryptedMessageV1,
   InjectedWindowProvider,
   PubSubSessionV1,
   PubSubSessionV2,
 } from '../types/types'
+
+export function getExtensions(): void {
+  type This = typeof globalThis
+
+  //@ts-ignore
+  const apiWindow = window as Window & ApiWindow
+  apiWindow.kilt = apiWindow.kilt || {}
+
+  Object.assign(apiWindow.kilt, {
+    meta: { value: { versions: { credentials: '3.0' } } },
+    enumerable: false,
+  })
+  apiWindow.addEventListener('kilt-dapp#initialized', getExtensions)
+}
 
 export default function useSporran() {
   const [sporran, setSporran] =
@@ -82,30 +97,10 @@ export default function useSporran() {
   }
 
   useEffect(() => {
-    const inState = !!sporran
-    //@ts-ignore
-    const inWindow = window.kilt && window.kilt.sporran
-    if (!inState && inWindow) {
-      //@ts-ignore
+    getExtensions()
+    const apiWindow = window as Window & ApiWindow
 
-      setSporran(window.kilt.sporran)
-    }
-
-    if (!inState) {
-      //@ts-ignore
-
-      window.kilt = new Proxy(
-        {},
-        {
-          set(target, prop, value) {
-            if (prop === 'sporran') {
-              setSporran(value)
-            }
-            return !!(target[prop] = value)
-          },
-        }
-      )
-    }
+    setSporran(apiWindow.kilt.sporran)
   })
 
   return {
