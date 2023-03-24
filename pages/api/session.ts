@@ -8,7 +8,7 @@ import { Did, DidResourceUri, connect } from '@kiltprotocol/sdk-js'
  */
 async function validateSession(req, res) {
   // the payload from client
-  const { encryptionKeyId, encryptedChallenge, nonce, sessionId } = JSON.parse(
+  const { encryptionKeyUri, encryptedChallenge, nonce, sessionId } = JSON.parse(
     req.body
   )
 
@@ -18,10 +18,10 @@ async function validateSession(req, res) {
   if (!session) return exit(res, 500, 'invalid session')
 
   // load the encryption key
-  const encryptionKey = await Did.resolveKey(encryptionKeyId)
+  const encryptionKey = await Did.resolveKey(encryptionKeyUri)
 
   if (!encryptionKey) {
-    return exit(res, 500, `failed resolving ${encryptionKeyId}`)
+    return exit(res, 500, `failed resolving ${encryptionKeyUri}`)
   }
 
   // decrypt the message
@@ -38,7 +38,7 @@ async function validateSession(req, res) {
   storage.put(sessionId, {
     ...session,
     did: encryptionKey.controller,
-    encryptionKeyId,
+    encryptionKeyUri,
     didConfirmed: true,
   })
 
@@ -54,13 +54,13 @@ async function returnSessionValues(req, res) {
   // create session data
   const fullDid = await getFullDid()
 
-  const dAppEncryptionKeyId: DidResourceUri = `${DID_URI}${fullDid.document.keyAgreement[0].id}`
+  const dAppEncryptionKeyUri: DidResourceUri = `${DID_URI}${fullDid.document.keyAgreement[0].id}`
 
   const session = {
     sessionId: randomAsHex(),
     challenge: randomAsHex(),
     dappName: process.env.DAPP_NAME,
-    dAppEncryptionKeyId,
+    dAppEncryptionKeyUri,
   }
 
   // store it in session

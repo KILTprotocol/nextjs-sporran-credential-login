@@ -25,8 +25,6 @@ async function verifyRequest(req, res) {
   // the payload from client
   const { sessionId, message } = JSON.parse(req.body)
 
-  const encryptedMessage = message
-
   // load the session, fail if null or missing challenge request
   const session = storage.get(sessionId)
   if (!session) return exit(res, 500, 'invalid session')
@@ -34,28 +32,25 @@ async function verifyRequest(req, res) {
   const { challenge } = session
   if (!challenge) return exit(res, 500, 'invalid challenge request')
 
-  const correctMessage: IEncryptedMessage = {
-    ciphertext: encryptedMessage.ciphertext,
-    receiverKeyUri: encryptedMessage.receiverKeyId as DidResourceUri,
-    senderKeyUri: encryptedMessage.senderKeyId as DidResourceUri,
-    nonce: encryptedMessage.nonce,
-  }
-
   // get decrypted message
-  const decryptedMessage = await Message.decrypt(correctMessage, decrypt)
+  const decryptedMessage = await Message.decrypt(message, decrypt).catch(
+    (e) => {
+      throw new Error(e)
+    }
+  )
 
   const messageBody = decryptedMessage.body
 
   const { type, content } = messageBody
 
   // fail if incorrect message type
-  // if (type !== 'submit-credential') {
-  //   res.statusMessage = 'unexpected message type'
-  //   return res.status(500).end()
-  // }
+  if (type !== 'submit-credential') {
+    res.statusMessage = 'unexpected message type'
+    return res.status(500).end()
+  }
 
   // load the credential, check attestation and ownership
-  const credential = Credential.fromClaim(content[0].request.claim)
+  const credential = Credential.fromClaim(content[0].claim)
 
   // fail if not attested or owner
 
@@ -99,17 +94,17 @@ async function getRequest(req, res) {
   if (!session) return exit(res, 500, 'invalid session')
 
   // load encryptionKeyUri and the did, making sure it's confirmed
-  const { did, didConfirmed, encryptionKeyId, nonce } = session
+  const { did, didConfirmed, encryptionKeyUri, nonce } = session
 
-  const encryptionKey = Did.parse(encryptionKeyId)
+  const encryptionKey = Did.parse(encryptionKeyUri)
 
   if (!encryptionKey) {
-    return exit(res, 500, `failed resolving ${encryptionKeyId}`)
+    return exit(res, 500, `failed resolving ${encryptionKeyUri}`)
   }
 
   if (!did || !didConfirmed) return exit(res, 500, 'unconfirmed did')
 
-  if (!encryptionKeyId) return exit(res, 500, 'missing encryptionKeyId')
+  if (!encryptionKeyUri) return exit(res, 500, 'missing encryptionKeyUri')
 
   // set the challenge
   const challenge = Utils.UUID.generate()

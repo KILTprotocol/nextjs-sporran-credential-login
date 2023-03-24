@@ -1,8 +1,7 @@
-import { DidResourceUri } from '@kiltprotocol/sdk-js'
+import { DidResourceUri, IEncryptedMessage } from '@kiltprotocol/sdk-js'
 import { useState, useEffect } from 'react'
 import {
   ApiWindow,
-  IEncryptedMessageV1,
   InjectedWindowProvider,
   PubSubSessionV1,
   PubSubSessionV2,
@@ -41,17 +40,11 @@ export default function useSporran() {
     })
 
     const message = await result.json()
-    const encryptedMessage: IEncryptedMessageV1 = {
-      ciphertext: message.ciphertext,
-      nonce: message.nonce,
-      receiverKeyId: message.receiverKeyUri as DidResourceUri,
-      senderKeyId: message.senderKeyUri as DidResourceUri,
-    }
-    //@ts-ignore
-    await sessionObject.session.send(encryptedMessage)
 
-    sessionObject.session.listen(async (message) => {
-      const result = await fetch('/api/verify', {
+    await sessionObject.session.send(message)
+
+    await sessionObject.session.listen(async (message) => {
+      await fetch('/api/verify', {
         credentials: 'include',
         method: 'POST',
         headers: {
@@ -71,12 +64,12 @@ export default function useSporran() {
 
     if (!values.ok) throw Error(values.statusText)
 
-    const { sessionId, challenge, dappName, dAppEncryptionKeyId } =
+    const { sessionId, challenge, dappName, dAppEncryptionKeyUri } =
       await values.json()
 
     const session = await sporran.startSession(
       dappName,
-      dAppEncryptionKeyId,
+      dAppEncryptionKeyUri,
       challenge
     )
 
